@@ -1,0 +1,23 @@
+{
+  "calculator": "计算",
+  "plan": "计划",
+  "settings": "设置",
+  "formula": "计算公式",
+  "weight": "重量",
+  "reps": "次数",
+  "calculate": "计算",
+  "set_as": "设置为",
+  "one_rep_max_calculator": "1RM计算器",
+  "squat": "深蹲",
+  "bench": "卧推",
+  "deadlift": "硬拉",
+  "body_weight": "体重",
+  "gender": "性别",
+  "wilks_score": "wilks系数",
+  "male": "男",
+  "female": "女",
+  "item": "项目",
+  "total": "总和",
+  "training_level": "训练级别",
+  "language": "语言"
+}

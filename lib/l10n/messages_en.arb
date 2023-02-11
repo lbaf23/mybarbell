@@ -1,0 +1,36 @@
+{
+  "calculator": "Calculator",
+  "@calculator": {
+    "type": "text"
+  },
+  "plan": "Plan",
+  "@Plan": {
+    "type": "text"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "type": "text"
+  },
+  "formula": "Formula",
+  "@formula": {
+  },
+  "weight": "Weight",
+  "@weight": {
+  },
+  "one_rep_max_calculator": "One Rep max calculator",
+  "reps": "Reps",
+  "calculate": "Calculate",
+  "set_as": "set as",
+  "squat": "Squat",
+  "bench": "Bench",
+  "deadlift": "Deadlift",
+  "body_weight": "Body Weight",
+  "gender": "Gender",
+  "wilks_score": "Wilks Score",
+  "male": "Male",
+  "female": "Female",
+  "item": "Item",
+  "total": "Total",
+  "training_level": "Training Level",
+  "language": "Language"
+}
