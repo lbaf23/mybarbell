@@ -37,6 +37,13 @@
   "item": "Item",
   "total": "Total",
   "training_level": "Training Level",
+  "untrained": "Untrained",
+  "beginner": "Beginner",
+  "novice": "Novice",
+  "intermediate": "intermediate",
+  "advanced": "Advanced",
+  "elite": "Elite",
+
 
   "weight_not_specified": "Weight not specified",
   "reps_not_specified": "Reps not specified",

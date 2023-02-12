@@ -21,6 +21,12 @@
   "item": "项目",
   "total": "总和",
   "training_level": "训练级别",
+  "untrained": "未经训练",
+  "beginner": "初学者",
+  "novice": "初级",
+  "intermediate": "中级",
+  "advanced": "高级",
+  "elite": "精英",
 
   "weight_not_specified": "需要填写重量",
   "reps_not_specified": "需要填写次数",

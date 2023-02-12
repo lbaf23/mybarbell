@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 var Formula = <String>['Beachle', 'Brzycky', 'Epley'];
@@ -41,19 +41,19 @@ double calculateWilksScore(
           f[gender] * pow(bodyWeight, 5));
 }
 
-List calculateWilksLevel(double score) {
+List calculateWilksLevel(double score, BuildContext context) {
   if (score < 120) {
-    return ['Untrained', Colors.grey];
+    return [AppLocalizations.of(context)!.untrained, Colors.grey];
   } else if (score < 200) {
-    return ['Beginner', Colors.green];
+    return [AppLocalizations.of(context)!.beginner, Colors.green];
   } else if (score < 238) {
-    return ['Novice', Colors.lightBlue];
+    return [AppLocalizations.of(context)!.novice, Colors.lightBlue];
   } else if (score < 326) {
-    return ['Intermediate', Colors.yellow];
+    return [AppLocalizations.of(context)!.intermediate, Colors.yellow];
   } else if (score < 414) {
-    return ['Advanced', Colors.orange];
+    return [AppLocalizations.of(context)!.advanced, Colors.orange];
   } else {
-    return ['Elite', Colors.red];
+    return [AppLocalizations.of(context)!.elite, Colors.red];
   }
 }
 
