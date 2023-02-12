@@ -1,6 +1,9 @@
 # mybarbell
 
-A new Flutter project.
+- flutter
+- material design
+- cross-platform
+
 
 ## Getting Started
 
