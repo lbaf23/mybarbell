@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 var Formula = <String>['Beachle', 'Brzycky', 'Epley'];
 
-double Calculate1RM(
+double calculate1RM(
     String formula, String weightUnit, double weight, int reps) {
   if (formula == Formula[0]) {
     return weight * (1 + (0.033 * reps));
@@ -25,8 +25,12 @@ const d = [-0.00113732, -0.00930733913];
 const e = [7.01863E-06, 4.731582E-05];
 const f = [-1.291E-08, -9.054E-08];
 
-double CalculateWilksScore(
+double calculateWilksScore(
     String bodyWeightUnit, double bodyWeight, int gender, double bellWeight) {
+  if(bodyWeightUnit == 'Lb') {
+    bodyWeight = lb2kg(bodyWeight);
+    bellWeight = lb2kg(bellWeight);
+  }
   return bellWeight *
       500.0 /
       (a[gender] +
@@ -37,7 +41,7 @@ double CalculateWilksScore(
           f[gender] * pow(bodyWeight, 5));
 }
 
-List CalculateWilksLevel(double score) {
+List calculateWilksLevel(double score) {
   if (score < 120) {
     return ['Untrained', Colors.grey];
   } else if (score < 200) {
@@ -51,4 +55,16 @@ List CalculateWilksLevel(double score) {
   } else {
     return ['Elite', Colors.red];
   }
+}
+
+double lb2kg(double lb) {
+  return lb * 0.45359237;
+}
+
+double kg2lb(double kg) {
+  return kg / 0.45359237;
+}
+
+String formatDouble(double d) {
+  return d.toStringAsFixed(2);
 }

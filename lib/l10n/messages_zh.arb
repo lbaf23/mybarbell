@@ -7,7 +7,9 @@
   "reps": "次数",
   "calculate": "计算",
   "set_as": "设置为",
+  "percentages": "百分比",
   "one_rep_max_calculator": "1RM计算器",
+  "clear": "清除",
   "squat": "深蹲",
   "bench": "卧推",
   "deadlift": "硬拉",
@@ -19,5 +21,10 @@
   "item": "项目",
   "total": "总和",
   "training_level": "训练级别",
+
+  "weight_not_specified": "需要填写重量",
+  "reps_not_specified": "需要填写次数",
+  "body_weight_not_specified": "需要填写体重",
+
   "language": "语言"
 }

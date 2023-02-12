@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -10,30 +11,91 @@ class CalculatorPage extends StatefulWidget {
   State<CalculatorPage> createState() => _CalculatorPageState();
 }
 
+
+const zeroStr = '0.00';
+const noLevel = '----';
+
+  const percentagesData = [
+    '95%', '90%', '85%', '80%',
+    '75%', '70%', '65%', '60%',
+    '55%', '50%', '45%', '40%'
+  ];
+  const percentagesReps = [
+    '2', '3', '4~5', '6~7',
+    '8~9', '10~11', '12~14', '15~16',
+    '17~20', '21~25', '26~30', '30+'
+  ];
+  var percentagesWeight = [
+    zeroStr, zeroStr, zeroStr, zeroStr,
+    zeroStr, zeroStr, zeroStr, zeroStr,
+    zeroStr, zeroStr, zeroStr, zeroStr
+  ];
+
 class _CalculatorPageState extends State<CalculatorPage> {
   var _formula = Formula[0];
 
   var _weightUnit = 'Kg';
   var _weightController = TextEditingController();
   var _repsController = TextEditingController();
-  var rm1 = '0.00';
+  var _rm1 = zeroStr;
 
   var _bodyWeightController = TextEditingController();
-  var _bodyWeightUnit = 'Kg';
+  var _wkWeightUnit = 'Kg';
   var _gender = '0';
 
   var _squatController = TextEditingController();
   var _benchController = TextEditingController();
   var _deadliftController = TextEditingController();
 
-  var _squatWilksScore = '0.00';
-  var _benchWilksScore = '0.00';
-  var _deadliftWilksScore = '0.00';
-  var _totalWilksScore = '0.00';
-  var _wilksLevel = '--';
+  var _squatWilksScore = zeroStr;
+  var _benchWilksScore = zeroStr;
+  var _deadliftWilksScore = zeroStr;
+  var _totalWilksScore = zeroStr;
+  var _wilksLevel = noLevel;
   var _levelColor = Colors.grey;
 
-  void _onCalculate1RM() {
+  void _clearData() {
+    _weightController.text = '';
+    _repsController.text = '';
+
+    for (int i=0; i<12; i++) {
+      percentagesWeight[i] = zeroStr;
+    }
+
+    setState(() {
+      _weightUnit = 'Kg';
+      _rm1 = zeroStr;
+    });
+  }
+  void _clearWilksData() {
+    _bodyWeightController.text = '';
+    _squatController.text = '';
+    _benchController.text = '';
+    _deadliftController.text = '';
+    setState(() {
+      _wkWeightUnit = 'Kg';
+      _gender = '0';
+      _squatWilksScore = zeroStr;
+      _benchWilksScore = zeroStr;
+      _deadliftWilksScore = zeroStr;
+      _totalWilksScore = zeroStr;
+      _wilksLevel = noLevel;
+      _levelColor = Colors.grey;
+    });
+  }
+
+  void _onCalculate1RM(formula) {
+    if (_weightController.text == '') {
+      var snackBar = SnackBar(content: Text(AppLocalizations.of(context)!.weight_not_specified), duration: const Duration(seconds: 1),);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+    if(_repsController.text == '') {
+      var snackBar = SnackBar(content: Text(AppLocalizations.of(context)!.reps_not_specified), duration: const Duration(seconds: 1),);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     double weight;
     int reps;
     try {
@@ -47,13 +109,31 @@ class _CalculatorPageState extends State<CalculatorPage> {
       return;
     }
 
+    var rm1 = calculate1RM(formula, _weightUnit, weight, reps);
     setState(() {
-      rm1 =
-          Calculate1RM(_formula, _weightUnit, weight, reps).toStringAsFixed(2);
+      _rm1 = rm1.toStringAsFixed(2);
     });
+    calculatePercentages(rm1);
   }
 
-  void _onCalculateWilKs() {
+  void calculatePercentages(double rm1) {
+    for(int i=0; i<12; i++) {
+      percentagesWeight[i] = ((95-5*i)/100.0 * rm1).toStringAsFixed(2);
+    }
+  }
+
+  void _onCalculateWilKs(String gender) {
+    if(_bodyWeightController.text == '') {
+      var snackBar = SnackBar(content: Text(AppLocalizations.of(context)!.body_weight_not_specified), duration: const Duration(seconds: 1),);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+    if (_squatController.text == '' && _benchController.text == '' && _deadliftController.text == '') {
+      var snackBar = SnackBar(content: Text(AppLocalizations.of(context)!.weight_not_specified), duration: const Duration(seconds: 1),);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     double bodyWeight;
     try {
       bodyWeight = double.parse(_bodyWeightController.text);
@@ -61,44 +141,44 @@ class _CalculatorPageState extends State<CalculatorPage> {
       return;
     }
 
-    String squat = _squatController.value.text;
-    String bench = _benchController.value.text;
-    String deadlift = _deadliftController.value.text;
+    String squat = _squatController.text;
+    String bench = _benchController.text;
+    String deadlift = _deadliftController.text;
 
     double score1, score2, score3;
     if (squat != '') {
       setState(() {
-        score1 = CalculateWilksScore(_bodyWeightUnit, bodyWeight,
-            int.parse(_gender), double.parse(squat));
+        score1 = calculateWilksScore(_wkWeightUnit, bodyWeight,
+            int.parse(gender), double.parse(squat));
         _squatWilksScore = score1.toStringAsFixed(2);
       });
     }
 
     if (bench != '') {
       setState(() {
-        score2 = CalculateWilksScore(_bodyWeightUnit, bodyWeight,
-            int.parse(_gender), double.parse(bench));
+        score2 = calculateWilksScore(_wkWeightUnit, bodyWeight,
+            int.parse(gender), double.parse(bench));
         _benchWilksScore = score2.toStringAsFixed(2);
       });
     }
 
     if (deadlift != '') {
       setState(() {
-        score3 = CalculateWilksScore(_bodyWeightUnit, bodyWeight,
-            int.parse(_gender), double.parse(deadlift));
+        score3 = calculateWilksScore(_wkWeightUnit, bodyWeight,
+            int.parse(gender), double.parse(deadlift));
         _deadliftWilksScore = score3.toStringAsFixed(2);
       });
     }
 
     if (squat != '' && bench != '' && deadlift != '') {
       setState(() {
-        double score = CalculateWilksScore(
-            _bodyWeightUnit,
+        double score = calculateWilksScore(
+            _wkWeightUnit,
             bodyWeight,
-            int.parse(_gender),
+            int.parse(gender),
             double.parse(squat) + double.parse(bench) + double.parse(deadlift));
         _totalWilksScore = score.toStringAsFixed(2);
-        var level = CalculateWilksLevel(score);
+        var level = calculateWilksLevel(score);
         _wilksLevel = level[0];
         _levelColor = level[1];
       });
@@ -108,16 +188,17 @@ class _CalculatorPageState extends State<CalculatorPage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         child: SingleChildScrollView(
           child: Column(
             children: [
               Card(
                   child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Row(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           AppLocalizations.of(context)!.one_rep_max_calculator,
@@ -126,215 +207,317 @@ class _CalculatorPageState extends State<CalculatorPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        OutlinedButton(
+                            onPressed: _clearData,
+                            child: Text(
+                              AppLocalizations.of(context)!.clear,
+                            )
+                        )
                       ],
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.formula,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
                         const SizedBox(
-                          width: 10,
+                          height: 10,
                         ),
-                        DropdownButton(
-                            value: _formula,
-                            items: Formula.map<DropdownMenuItem<String>>(
-                                (String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _formula = value!;
-                              });
-                            })
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: TextField(
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'\d+\.?\d*'))
-                            ],
-                            maxLength: 6,
-                            controller: _weightController,
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: false),
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Weight',
-                                counterText: ''),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        DropdownButton<String>(
-                          value: _weightUnit,
-                          onChanged: (value) {
-                            setState(() {
-                              _weightUnit = value!;
-                            });
-                          },
-                          items: const [
-                            DropdownMenuItem(value: 'Kg', child: Text('Kg')),
-                            DropdownMenuItem(value: 'Lb', child: Text('Lb'))
+                        Row(
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.formula,
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            DropdownButton(
+                                value: _formula,
+                                items: Formula.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  if (value != _formula) {
+                                    _onCalculate1RM(value!);
+                                    setState(() {
+                                      _formula = value;
+                                    });
+                                  }
+                                })
                           ],
                         ),
                         const SizedBox(
-                          width: 20,
+                          height: 10,
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            maxLength: 6,
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: false),
-                            controller: _repsController,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'\d'))
-                            ],
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: AppLocalizations.of(context)!.reps,
-                                counterText: ''),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            const Text(
-                              '1RM:',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            Expanded(
+                              flex: 2,
+                              child: TextField(
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'\d+\.?\d*'))
+                                ],
+                                maxLength: 6,
+                                controller: _weightController,
+                                keyboardType: const TextInputType.numberWithOptions(
+                                    decimal: false),
+                                decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: AppLocalizations.of(context)!.weight,
+                                    counterText: ''),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            DropdownButton<String>(
+                              value: _weightUnit,
+                              onChanged: (value) {
+                                if(_weightUnit != value) {
+                                  if(value == 'Kg') {
+                                    if(_weightController.text != '') {
+                                      _weightController.text = lb2kg(
+                                          double.parse(
+                                              _weightController.text))
+                                          .toStringAsFixed(2);
+                                    }
+                                    if(_rm1 != zeroStr) {
+                                      double rm1 = lb2kg(double.parse(_rm1));
+                                      setState(() {
+                                        _rm1 = rm1.toStringAsFixed(2);
+                                      });
+                                      calculatePercentages(rm1);
+                                    }
+                                  }
+                                  else {
+                                    if(_weightController.text != '') {
+                                      _weightController.text =
+                                          kg2lb(double.parse(_weightController.text)).toStringAsFixed(2);
+                                    }
+                                    if(_rm1 != zeroStr) {
+                                      double rm1 = kg2lb(double.parse(_rm1));
+                                      setState(() {
+                                        _rm1 = rm1.toStringAsFixed(2);
+                                      });
+                                      calculatePercentages(rm1);
+                                    }
+                                  }
+                                }
+                                setState(() {
+                                    _weightUnit = value!;
+                                });
+                              },
+                              items: const [
+                                DropdownMenuItem(value: 'Kg', child: Text('Kg')),
+                                DropdownMenuItem(value: 'Lb', child: Text('Lb'))
+                              ],
                             ),
                             const SizedBox(
                               width: 20,
                             ),
-                            Text(
-                              rm1,
-                              style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                maxLength: 6,
+                                keyboardType: const TextInputType.numberWithOptions(
+                                    decimal: false),
+                                controller: _repsController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'\d'))
+                                ],
+                                decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: AppLocalizations.of(context)!.reps,
+                                    counterText: ''),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  '1RM:',
+                                  style: TextStyle(
+                                      fontSize: 16
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                    _rm1,
+                                    style: const TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  _weightUnit,
+                                  style: const TextStyle(
+                                      fontSize: 16
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(
-                              width: 3,
+                              width: 10,
                             ),
-                            Text(
-                              _weightUnit,
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
+                            SizedBox(
+                                height: 40,
+                                child: ElevatedButton(
+                                    onPressed: () => _onCalculate1RM(_formula),
+                                    child: Text(
+                                        AppLocalizations.of(context)!.calculate)))
                           ],
                         ),
                         const SizedBox(
-                          width: 10,
+                          height: 10,
                         ),
-                        SizedBox(
-                            height: 40,
-                            child: ElevatedButton(
-                                onPressed: _onCalculate1RM,
-                                child: Text(
-                                    AppLocalizations.of(context)!.calculate)))
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.set_as,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        ButtonBar(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            OutlinedButton(
-                                onPressed: () {
-                                  if (rm1 != '0.00') {
-                                    setState(() {
-                                      _squatController.text = rm1;
-                                    });
-                                  }
-                                },
-                                child:
-                                    Text(AppLocalizations.of(context)!.squat)),
-                            OutlinedButton(
-                                onPressed: () {
-                                  if (rm1 != '0.00') {
-                                    setState(() {
-                                      _benchController.text = rm1;
-                                    });
-                                  }
-                                },
-                                child:
-                                    Text(AppLocalizations.of(context)!.bench)),
-                            OutlinedButton(
-                                onPressed: () {
-                                  if (rm1 != '0.00') {
-                                    setState(() {
-                                      _deadliftController.text = rm1;
-                                    });
-                                  }
-                                },
-                                child: Text(
-                                    AppLocalizations.of(context)!.deadlift))
+                            Text(
+                              AppLocalizations.of(context)!.set_as,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            ButtonBar(
+                              children: [
+                                OutlinedButton(
+                                    onPressed: () {
+                                      if (_rm1 != zeroStr) {
+                                        if (_weightUnit != _wkWeightUnit) {
+                                          if (_wkWeightUnit == 'Kg') {
+                                            _squatController.text = lb2kg(double.parse(_rm1)).toStringAsFixed(2);
+                                          }
+                                          else {
+                                            _squatController.text = kg2lb(double.parse(_rm1)).toStringAsFixed(2);
+                                          }
+                                        }
+                                        else {
+                                          _squatController.text = _rm1;
+                                        }
+                                      }
+                                    },
+                                    child:
+                                        Text(AppLocalizations.of(context)!.squat)),
+                                OutlinedButton(
+                                    onPressed: () {
+                                      if (_rm1 != zeroStr) {
+                                        if (_weightUnit != _wkWeightUnit) {
+                                          if (_wkWeightUnit == 'Kg') {
+                                            _benchController.text = lb2kg(double.parse(_rm1)).toStringAsFixed(2);
+                                          }
+                                          else {
+                                            _benchController.text = kg2lb(double.parse(_rm1)).toStringAsFixed(2);
+                                          }
+                                        }
+                                        else {
+                                          _benchController.text = _rm1;
+                                        }
+                                      }
+                                    },
+                                    child:
+                                        Text(AppLocalizations.of(context)!.bench)),
+                                OutlinedButton(
+                                    onPressed: () {
+                                      if (_rm1 != zeroStr) {
+                                        if (_weightUnit != _wkWeightUnit) {
+                                          if (_wkWeightUnit == 'Kg') {
+                                            _deadliftController.text = lb2kg(double.parse(_rm1)).toStringAsFixed(2);
+                                          }
+                                          else {
+                                            _deadliftController.text = kg2lb(double.parse(_rm1)).toStringAsFixed(2);
+                                          }
+                                        }
+                                        else {
+                                          _deadliftController.text = _rm1;
+                                        }
+                                      }
+                                    },
+                                    child: Text(
+                                        AppLocalizations.of(context)!.deadlift))
+                              ],
+                            )
+                          ],
+                        ),
+                        const Divider(),
+                        Row(
+                          children: [
+                            DataTable(
+                              showBottomBorder: true,
+                              columns: [DataColumn(label: Text(AppLocalizations.of(context)!.weight))],
+                              rows: [
+                                DataRow(cells: [DataCell(Text(AppLocalizations.of(context)!.percentages)),]),
+                                DataRow(cells: [DataCell(Text(AppLocalizations.of(context)!.reps)),])
+                              ],
+                            ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: DataTable(
+                                  showBottomBorder: true,
+
+                                  columns: percentagesWeight.map<DataColumn>( (value) {
+                                        return DataColumn(label: Text(value));
+                                      }).toList(),
+                                  rows: [
+                                    DataRow(
+                                        cells: percentagesData.map<DataCell>((value) {
+                                          return DataCell(Text(value));
+                                        } ).toList()
+                                    ),
+                                    DataRow(
+                                        cells: percentagesReps.map<DataCell>((value) {
+                                          return DataCell(Text(value));
+                                        } ).toList()
+                                    ),
+                                  ],
+                                ),
+                              )
+                            )
                           ],
                         )
                       ],
-                    ),
-                    Row(
-                      children: const [
-                        Text(
-                          'Percentage',
-                          style: TextStyle(fontSize: 16),
-                        )
-                      ],
-                    ),
-                    const Divider()
-                  ],
                 ),
               )),
               Card(
                   child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           AppLocalizations.of(context)!.wilks_score,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        OutlinedButton(
+                            onPressed: _clearWilksData,
+                            child: Text(
+                              AppLocalizations.of(context)!.clear,
+                            )
                         )
                       ],
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
                         Expanded(
@@ -348,7 +531,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                                 RegExp(r'\d+\.?\d*'))
                           ],
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               labelText: AppLocalizations.of(context)!.squat,
                               counterText: ''),
                         )),
@@ -366,7 +549,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                                 RegExp(r'\d+\.?\d*'))
                           ],
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               labelText: AppLocalizations.of(context)!.bench,
                               counterText: ''),
                         )),
@@ -377,14 +560,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
                             child: TextField(
                           maxLength: 6,
                           keyboardType:
-                              TextInputType.numberWithOptions(decimal: false),
+                              const TextInputType.numberWithOptions(decimal: false),
                           controller: _deadliftController,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
                                 RegExp(r'\d+\.?\d*'))
                           ],
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               labelText: AppLocalizations.of(context)!.deadlift,
                               counterText: ''),
                         )),
@@ -415,15 +598,45 @@ class _CalculatorPageState extends State<CalculatorPage> {
                           width: 5,
                         ),
                         DropdownButton(
-                            value: _bodyWeightUnit,
+                            value: _wkWeightUnit,
                             items: const [
                               DropdownMenuItem(value: 'Kg', child: Text('Kg')),
                               DropdownMenuItem(value: 'Lb', child: Text('Lb'))
                             ],
                             onChanged: (value) {
-                              setState(() {
-                                _bodyWeightUnit = value!;
-                              });
+                              if (value != _wkWeightUnit) {
+                                if (value == 'Kg') {
+                                  if(_squatController.text != '') {
+                                    _squatController.text = lb2kg(double.parse(_squatController.text)).toStringAsFixed(2);
+                                  }
+                                  if(_benchController.text != '') {
+                                    _benchController.text = lb2kg(double.parse(_benchController.text)).toStringAsFixed(2);
+                                  }
+                                  if(_deadliftController.text != '') {
+                                    _deadliftController.text = lb2kg(double.parse(_deadliftController.text)).toStringAsFixed(2);
+                                  }
+                                  if(_bodyWeightController.text != '') {
+                                    _bodyWeightController.text = lb2kg(double.parse(_bodyWeightController.text)).toStringAsFixed(2);
+                                  }
+                                }
+                                else {
+                                  if(_squatController.text != '') {
+                                    _squatController.text = kg2lb(double.parse(_squatController.text)).toStringAsFixed(2);
+                                  }
+                                  if(_benchController.text != '') {
+                                    _benchController.text = kg2lb(double.parse(_benchController.text)).toStringAsFixed(2);
+                                  }
+                                  if(_deadliftController.text != '') {
+                                    _deadliftController.text = kg2lb(double.parse(_deadliftController.text)).toStringAsFixed(2);
+                                  }
+                                  if(_bodyWeightController.text != '') {
+                                    _bodyWeightController.text = kg2lb(double.parse(_bodyWeightController.text)).toStringAsFixed(2);
+                                  }
+                                }
+                                setState(() {
+                                  _wkWeightUnit = value!;
+                                });
+                              }
                             }),
                       ],
                     ),
@@ -437,7 +650,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                           children: [
                             Text(
                               AppLocalizations.of(context)!.gender,
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(
                               width: 15,
@@ -455,16 +668,19 @@ class _CalculatorPageState extends State<CalculatorPage> {
                                           AppLocalizations.of(context)!.female))
                                 ],
                                 onChanged: (value) {
-                                  setState(() {
-                                    _gender = value!;
-                                  });
+                                  if (_gender != value) {
+                                    _onCalculateWilKs(value!);
+                                    setState(() {
+                                      _gender = value;
+                                    });
+                                  }
                                 }),
                           ],
                         ),
                         SizedBox(
                           height: 40,
                           child: ElevatedButton(
-                              onPressed: _onCalculateWilKs,
+                              onPressed: () => _onCalculateWilKs(_gender),
                               child: Text(
                                   AppLocalizations.of(context)!.calculate)),
                         )
@@ -476,7 +692,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: DataTable(showBottomBorder: true, columns: [
+                          child: DataTable(
+                              showBottomBorder: true, columns: [
                             DataColumn(
                                 label:
                                     Text(AppLocalizations.of(context)!.item)),

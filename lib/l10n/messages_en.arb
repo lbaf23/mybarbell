@@ -17,10 +17,15 @@
   "weight": "Weight",
   "@weight": {
   },
+
   "one_rep_max_calculator": "One Rep max calculator",
+  "clear": "Clear",
+
   "reps": "Reps",
   "calculate": "Calculate",
   "set_as": "set as",
+  "percentages": "Percentages",
+
   "squat": "Squat",
   "bench": "Bench",
   "deadlift": "Deadlift",
@@ -32,5 +37,10 @@
   "item": "Item",
   "total": "Total",
   "training_level": "Training Level",
+
+  "weight_not_specified": "Weight not specified",
+  "reps_not_specified": "Reps not specified",
+  "body_weight_not_specified": "Body weight not specified",
+
   "language": "Language"
 }
