@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:mybarbell/provider/current_locale.dart';
+import 'package:mybarbell/provider/currentSettings.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'CalculatorPage.dart';
 import 'PlanPage.dart';
 import 'SettingsPage.dart';
 
+
 void main() {
-  runApp(MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => CurrentLocale())],
-      child: const MyApp()));
+  runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => CurrentSettings()),
+        ],
+          child: const MyApp()
+      )
+  );
 /*  if (Platform.isAndroid) {
     SystemUiOverlayStyle systemUiOverlayStyle =
     SystemUiOverlayStyle(statusBarColor: Colors.transparent);
@@ -23,18 +30,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentLocale>(
-      builder: (context, currentLocale, child) {
+    return Consumer<CurrentSettings>(
+      builder: (context, currentSettings, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'MyBarbell',
-          locale: currentLocale.value,
+          locale: currentSettings.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(
+            brightness: currentSettings.theme,
             primarySwatch: Colors.blue,
           ),
-          home: const MyHomePage(title: 'MyBarbell'),
+          home: MyHomePage(
+              title: 'MyBarbell',
+              currentSettings: currentSettings
+          ),
         );
       },
     );
@@ -42,21 +53,32 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title, required this.currentSettings});
 
   final String title;
+  CurrentSettings currentSettings;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState(currentSettings);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var currentSettings;
+
+  _MyHomePageState(this.currentSettings);
+
   int _bottomIndex = 0;
-  final _pageList = [CalculatorPage(), PlanPage(), SettingsPage()];
+  final _pageList = [
+    CalculatorPage(),
+    // TODO PlanPage(),
+    SettingsPage()
+  ];
   final _fbutton = [
     null,
+    /* TODO
     FloatingActionButton(
         onPressed: () {}, tooltip: 'Increment', child: const Icon(Icons.add)),
+     */
     null
   ];
 
@@ -71,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
-          leading: Icon(Icons.home),
+          leading: const Icon(Icons.home),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _bottomIndex,
@@ -80,9 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem(
                 icon: const Icon(Icons.calculate),
                 label: AppLocalizations.of(context)!.calculator),
+            /* TODO
             BottomNavigationBarItem(
                 icon: const Icon(Icons.book),
                 label: AppLocalizations.of(context)!.plan),
+            */
             BottomNavigationBarItem(
                 icon: const Icon(Icons.settings),
                 label: AppLocalizations.of(context)!.settings),
