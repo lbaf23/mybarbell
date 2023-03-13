@@ -11,7 +11,7 @@ class CalculatorPage extends StatefulWidget {
 }
 
 const zeroStr = '0.00';
-const noLevel = '----';
+const noLevel = '    ';
 
 const percentagesData = [
   '95%',
@@ -60,17 +60,17 @@ class _CalculatorPageState extends State<CalculatorPage> {
   var _formula = Formula[0];
 
   var _weightUnit = 'Kg';
-  var _weightController = TextEditingController();
-  var _repsController = TextEditingController();
+  final _weightController = TextEditingController();
+  final _repsController = TextEditingController();
   var _rm1 = zeroStr;
 
-  var _bodyWeightController = TextEditingController();
+  final _bodyWeightController = TextEditingController();
   var _wkWeightUnit = 'Kg';
   var _gender = '0';
 
-  var _squatController = TextEditingController();
-  var _benchController = TextEditingController();
-  var _deadliftController = TextEditingController();
+  final _squatController = TextEditingController();
+  final _benchController = TextEditingController();
+  final _deadliftController = TextEditingController();
 
   var _squatWilksScore = zeroStr;
   var _benchWilksScore = zeroStr;
@@ -110,14 +110,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
     });
   }
 
-  void _onCalculate1RM(formula) {
+  bool _checkCalculate1RM() {
     if (_weightController.text == '') {
       var snackBar = SnackBar(
         content: Text(AppLocalizations.of(context)!.weight_not_specified),
         duration: const Duration(seconds: 1),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
+      return false;
     }
     if (_repsController.text == '') {
       var snackBar = SnackBar(
@@ -125,9 +125,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
         duration: const Duration(seconds: 1),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
+      return false;
     }
+    return true;
+  }
 
+  void _onCalculate1RM(formula) {
     double weight;
     int reps;
     try {
@@ -154,15 +157,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     }
   }
 
-  void _onCalculateWilKs(String gender) {
-    if (_bodyWeightController.text == '') {
-      var snackBar = SnackBar(
-        content: Text(AppLocalizations.of(context)!.body_weight_not_specified),
-        duration: const Duration(seconds: 1),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
-    }
+  bool _checkCalculateWilks() {
     if (_squatController.text == '' &&
         _benchController.text == '' &&
         _deadliftController.text == '') {
@@ -171,9 +166,20 @@ class _CalculatorPageState extends State<CalculatorPage> {
         duration: const Duration(seconds: 1),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
+      return false;
     }
+    if (_bodyWeightController.text == '') {
+      var snackBar = SnackBar(
+        content: Text(AppLocalizations.of(context)!.body_weight_not_specified),
+        duration: const Duration(seconds: 1),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
+    }
+    return true;
+  }
 
+  void _onCalculateWilKs(String gender) {
     double bodyWeight;
     try {
       bodyWeight = double.parse(_bodyWeightController.text);
@@ -225,6 +231,18 @@ class _CalculatorPageState extends State<CalculatorPage> {
     }
   }
 
+  List<DataRow> _getPercentagesReps() {
+    List<DataRow> list = [];
+    for (int i = 0; i < 12; i++) {
+      list.add(DataRow(cells: [
+        DataCell(Text(percentagesWeight[i])),
+        DataCell(Text(percentagesData[i])),
+        DataCell(Text(percentagesReps[i])),
+      ]));
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -232,8 +250,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Card(
-                  child: Padding(
+              Card(child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
@@ -242,12 +259,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.one_rep_max_calculator,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        OutlinedButton(
+                        TextButton(
                             onPressed: _clearData,
                             child: Text(
                               AppLocalizations.of(context)!.clear,
@@ -311,7 +328,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                           ),
                         ),
                         const SizedBox(
-                          width: 5,
+                          width: 20,
                         ),
                         DropdownButton<String>(
                           value: _weightUnit,
@@ -376,45 +393,63 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       ],
                     ),
                     const SizedBox(
-                      height: 15,
+                      height: 20,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: SizedBox(
+                                height: 35,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      _onCalculate1RM(_formula);
+                                    },
+                                    child: Text(
+                                        AppLocalizations.of(context)!.calculate
+                                    )
+                                )
+                            )
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             const Text(
                               '1RM:',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                              ),
                             ),
                             const SizedBox(
                               width: 20,
                             ),
                             Text(
                               _rm1,
-                              style: const TextStyle(
-                                fontSize: 26,
+                              style: TextStyle(
+                                fontSize: 44,
                                 fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary
                               ),
                             ),
                             const SizedBox(
-                              width: 5,
+                              width: 10,
                             ),
                             Text(
                               _weightUnit,
-                              style: const TextStyle(fontSize: 16),
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(
-                            height: 40,
-                            child: ElevatedButton(
-                                onPressed: () => _onCalculate1RM(_formula),
-                                child: Text(
-                                    AppLocalizations.of(context)!.calculate)))
+                        )
                       ],
                     ),
                     const SizedBox(
@@ -498,234 +533,148 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     ),
                     const Divider(),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        DataTable(
-                          showBottomBorder: true,
-                          columns: [
-                            DataColumn(
-                                label:
-                                    Text(AppLocalizations.of(context)!.weight))
-                          ],
-                          rows: [
-                            DataRow(cells: [
-                              DataCell(Text(
-                                  AppLocalizations.of(context)!.percentages)),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                  Text(AppLocalizations.of(context)!.reps)),
-                            ])
-                          ],
-                        ),
                         Expanded(
-                            child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            showBottomBorder: true,
-                            columns: percentagesWeight.map<DataColumn>((value) {
-                              return DataColumn(label: Text(value));
-                            }).toList(),
-                            rows: [
-                              DataRow(
-                                  cells: percentagesData.map<DataCell>((value) {
-                                return DataCell(Text(value));
-                              }).toList()),
-                              DataRow(
-                                  cells: percentagesReps.map<DataCell>((value) {
-                                return DataCell(Text(value));
-                              }).toList()),
-                            ],
-                          ),
-                        ))
+                            child: DataTable(
+                              showBottomBorder: true,
+                              columns: [
+                                DataColumn(
+                                    label: Text(AppLocalizations.of(context)!.weight)
+                                ),
+                                DataColumn(
+                                    label: Text(AppLocalizations.of(context)!.percentage)
+                                ),
+                                DataColumn(
+                                    label: Text(AppLocalizations.of(context)!.reps)
+                                )
+                              ],
+                              rows: _getPercentagesReps(),
+                            ),
+                        )
                       ],
                     )
                   ],
                 ),
               )),
+              // wilks score card
               Card(
                   child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.wilks_score,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        OutlinedButton(
-                            onPressed: _clearWilksData,
-                            child: Text(
-                              AppLocalizations.of(context)!.clear,
-                            ))
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: TextField(
-                          maxLength: 6,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: false),
-                          controller: _squatController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'\d+\.?\d*'))
-                          ],
-                          decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: AppLocalizations.of(context)!.squat,
-                              counterText: ''),
-                        )),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                            child: TextField(
-                          maxLength: 6,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: false),
-                          controller: _benchController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'\d+\.?\d*'))
-                          ],
-                          decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: AppLocalizations.of(context)!.bench,
-                              counterText: ''),
-                        )),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                            child: TextField(
-                          maxLength: 6,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: false),
-                          controller: _deadliftController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'\d+\.?\d*'))
-                          ],
-                          decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: AppLocalizations.of(context)!.deadlift,
-                              counterText: ''),
-                        )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: TextField(
-                          maxLength: 6,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: false),
-                          controller: _bodyWeightController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'\d+\.?\d*'))
-                          ],
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText:
-                                  AppLocalizations.of(context)!.body_weight,
-                              counterText: ''),
-                        )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        DropdownButton(
-                            value: _wkWeightUnit,
-                            items: const [
-                              DropdownMenuItem(value: 'Kg', child: Text('Kg')),
-                              DropdownMenuItem(value: 'Lb', child: Text('Lb'))
-                            ],
-                            onChanged: (value) {
-                              if (value != _wkWeightUnit) {
-                                if (value == 'Kg') {
-                                  if (_squatController.text != '') {
-                                    _squatController.text = lb2kg(
-                                            double.parse(_squatController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                  if (_benchController.text != '') {
-                                    _benchController.text = lb2kg(
-                                            double.parse(_benchController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                  if (_deadliftController.text != '') {
-                                    _deadliftController.text = lb2kg(
-                                            double.parse(
-                                                _deadliftController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                  if (_bodyWeightController.text != '') {
-                                    _bodyWeightController.text = lb2kg(
-                                            double.parse(
-                                                _bodyWeightController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                } else {
-                                  if (_squatController.text != '') {
-                                    _squatController.text = kg2lb(
-                                            double.parse(_squatController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                  if (_benchController.text != '') {
-                                    _benchController.text = kg2lb(
-                                            double.parse(_benchController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                  if (_deadliftController.text != '') {
-                                    _deadliftController.text = kg2lb(
-                                            double.parse(
-                                                _deadliftController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                  if (_bodyWeightController.text != '') {
-                                    _bodyWeightController.text = kg2lb(
-                                            double.parse(
-                                                _bodyWeightController.text))
-                                        .toStringAsFixed(2);
-                                  }
-                                }
-                                setState(() {
-                                  _wkWeightUnit = value!;
-                                });
-                              }
-                            }),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Text(
+                              AppLocalizations.of(context)!.wilks_score,
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            TextButton(
+                                onPressed: _clearWilksData,
+                                child: Text(
+                                  AppLocalizations.of(context)!.clear,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: TextField(
+                              maxLength: 6,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                  decimal: false),
+                              controller: _squatController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'\d+\.?\d*'))
+                              ],
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: AppLocalizations.of(context)!.squat,
+                                  counterText: ''),
+                            )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                                child: TextField(
+                              maxLength: 6,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                  decimal: false),
+                              controller: _benchController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'\d+\.?\d*'))
+                              ],
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: AppLocalizations.of(context)!.bench,
+                                  counterText: ''),
+                            )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                                child: TextField(
+                              maxLength: 6,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                  decimal: false),
+                              controller: _deadliftController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'\d+\.?\d*'))
+                              ],
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: AppLocalizations.of(context)!.deadlift,
+                                  counterText: ''),
+                            )),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: TextField(
+                              maxLength: 6,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                  decimal: false),
+                              controller: _bodyWeightController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'\d+\.?\d*'))
+                              ],
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText:
+                                      AppLocalizations.of(context)!.body_weight,
+                                  counterText: ''),
+                            )),
+                            const SizedBox(
+                              width: 20,
+                            ),
+/*
                             Text(
                               AppLocalizations.of(context)!.gender,
                               style: const TextStyle(fontSize: 16),
                             ),
+
                             const SizedBox(
                               width: 15,
                             ),
+*/
                             DropdownButton(
                                 value: _gender,
                                 items: [
                                   DropdownMenuItem(
                                       value: '0',
-                                      child: Text(
-                                          AppLocalizations.of(context)!.male)),
+                                      child:
+                                          Text(AppLocalizations.of(context)!.male)),
                                   DropdownMenuItem(
                                       value: '1',
                                       child: Text(
@@ -739,79 +688,160 @@ class _CalculatorPageState extends State<CalculatorPage> {
                                     });
                                   }
                                 }),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            DropdownButton(
+                                value: _wkWeightUnit,
+                                items: const [
+                                  DropdownMenuItem(
+                                      value: 'Kg', child: Text('Kg')),
+                                  DropdownMenuItem(
+                                      value: 'Lb', child: Text('Lb'))
+                                ],
+                                onChanged: (value) {
+                                  if (value != _wkWeightUnit) {
+                                    if (value == 'Kg') {
+                                      if (_squatController.text != '') {
+                                        _squatController.text = lb2kg(
+                                            double.parse(
+                                                _squatController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                      if (_benchController.text != '') {
+                                        _benchController.text = lb2kg(
+                                            double.parse(
+                                                _benchController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                      if (_deadliftController.text != '') {
+                                        _deadliftController.text = lb2kg(
+                                            double.parse(
+                                                _deadliftController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                      if (_bodyWeightController.text != '') {
+                                        _bodyWeightController.text = lb2kg(
+                                            double.parse(
+                                                _bodyWeightController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                    } else {
+                                      if (_squatController.text != '') {
+                                        _squatController.text = kg2lb(
+                                            double.parse(
+                                                _squatController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                      if (_benchController.text != '') {
+                                        _benchController.text = kg2lb(
+                                            double.parse(
+                                                _benchController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                      if (_deadliftController.text != '') {
+                                        _deadliftController.text = kg2lb(
+                                            double.parse(
+                                                _deadliftController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                      if (_bodyWeightController.text != '') {
+                                        _bodyWeightController.text = kg2lb(
+                                            double.parse(
+                                                _bodyWeightController.text))
+                                            .toStringAsFixed(2);
+                                      }
+                                    }
+                                    setState(() {
+                                      _wkWeightUnit = value!;
+                                    });
+                                  }
+                                }),
                           ],
                         ),
-                        SizedBox(
-                          height: 40,
-                          child: ElevatedButton(
-                              onPressed: () => _onCalculateWilKs(_gender),
-                              child: Text(
-                                  AppLocalizations.of(context)!.calculate)),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DataTable(showBottomBorder: true, columns: [
-                            DataColumn(
-                                label:
-                                    Text(AppLocalizations.of(context)!.item)),
-                            DataColumn(
-                                label: Text(
-                                    AppLocalizations.of(context)!.wilks_score)),
-                          ], rows: [
-                            DataRow(cells: [
-                              DataCell(
-                                  Text(AppLocalizations.of(context)!.squat)),
-                              DataCell(Text(_squatWilksScore)),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                  Text(AppLocalizations.of(context)!.bench)),
-                              DataCell(Text(_benchWilksScore)),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                  Text(AppLocalizations.of(context)!.deadlift)),
-                              DataCell(Text(_deadliftWilksScore)),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(Text(
-                                AppLocalizations.of(context)!.total,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                              DataCell(Text(
-                                _totalWilksScore,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                            ])
-                          ]),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.training_level,
-                          style: TextStyle(fontSize: 16),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: SizedBox(
+                                  height: 35,
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        if (_checkCalculateWilks()) {
+                                          _onCalculateWilKs(_gender);
+                                        }
+                                      },
+                                      child: Text(
+                                          AppLocalizations.of(context)!.calculate)),
+                                )
+                            )
+                          ],
                         ),
                         const SizedBox(
-                          width: 20,
+                          height: 10,
                         ),
-                        Chip(
-                          label: Text(_wilksLevel),
-                          backgroundColor: _levelColor,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DataTable(showBottomBorder: true, columns: [
+                                DataColumn(
+                                    label:
+                                        Text(AppLocalizations.of(context)!.item)),
+                                DataColumn(
+                                    label: Text(
+                                        AppLocalizations.of(context)!.wilks_score)),
+                              ], rows: [
+                                DataRow(cells: [
+                                  DataCell(
+                                      Text(AppLocalizations.of(context)!.squat)),
+                                  DataCell(Text(_squatWilksScore)),
+                                ]),
+                                DataRow(cells: [
+                                  DataCell(
+                                      Text(AppLocalizations.of(context)!.bench)),
+                                  DataCell(Text(_benchWilksScore)),
+                                ]),
+                                DataRow(cells: [
+                                  DataCell(
+                                      Text(AppLocalizations.of(context)!.deadlift)),
+                                  DataCell(Text(_deadliftWilksScore)),
+                                ]),
+                                DataRow(cells: [
+                                  DataCell(Text(
+                                    AppLocalizations.of(context)!.total,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  )),
+                                  DataCell(Text(
+                                    _totalWilksScore,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  )),
+                                ])
+                              ]),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.training_level,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Chip(
+                              label: Text(_wilksLevel),
+                              backgroundColor: _levelColor,
+                            )
+                          ],
                         )
                       ],
-                    )
-                  ],
                 ),
               ))
             ],

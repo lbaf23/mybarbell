@@ -10,71 +10,114 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-const languages = [
-  'English',
-  'Chinese',
-];
-
 const labelStyle = TextStyle(fontSize: 16);
 
+const localeList = ["en", "zh"];
+
 class _SettingsPageState extends State<SettingsPage> {
-  var _language = 'English';
+  var _language = '0';
+  var _theme = '0';
 
   void _onSetLanguage(value) {
-    setState(() {
-      _language = value!;
-    });
-    if (value == 'Chinese') {
+    if (value != _language) {
+      setState(() {
+        _language = value!;
+      });
       Provider.of<CurrentLocale>(context, listen: false)
-          .setLocale(const Locale('zh'));
-    } else {
-      Provider.of<CurrentLocale>(context, listen: false)
-          .setLocale(const Locale('en'));
+          .setLocale(Locale(localeList[int.parse(value)]));
+    }
+  }
+  void _onSetTheme(value) {
+    if (value != _theme) {
+      setState(() {
+        _theme = value!;
+      });
+      // TODO set theme
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
+    var languages = [
+      ['0', AppLocalizations.of(context)!.english],
+      ['1', AppLocalizations.of(context)!.chinese]
+    ];
+    var themes = [
+      ['0', AppLocalizations.of(context)!.light],
+      ['1', AppLocalizations.of(context)!.dark]
+    ];
+
     return Padding(
         padding: EdgeInsets.all(5),
         child: Card(
             child: Padding(
-          padding: EdgeInsets.all(10),
-          child: ListView(
-            children: [
-              const Divider(),
-              Row(
+              padding: const EdgeInsets.all(10),
+              child: ListView(
                 children: [
-                  Icon(
-                    Icons.language,
-                    size: 16,
+                  const Divider(),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.language,
+                        size: 16,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.language,
+                        style: labelStyle,
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      DropdownButton(
+                        value: _language,
+                        items:
+                            languages.map<DropdownMenuItem<String>>((List<String> value) {
+                          return DropdownMenuItem<String>(
+                            value: value[0],
+                            child: Text(value[1])
+                          );
+                        }).toList(),
+                        onChanged: _onSetLanguage,
+                      )
+                    ],
                   ),
-                  SizedBox(
-                    width: 10,
+                  const Divider(),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.color_lens,
+                        size: 16,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.theme,
+                        style: labelStyle,
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      DropdownButton(
+                        value: _theme,
+                        items:
+                        themes.map<DropdownMenuItem<String>>((List<String> value) {
+                          return DropdownMenuItem<String>(
+                              value: value[0],
+                              child: Text(value[1])
+                          );
+                        }).toList(),
+                        onChanged: _onSetTheme,
+                      )
+                    ],
                   ),
-                  Text(
-                    AppLocalizations.of(context)!.language,
-                    style: labelStyle,
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  DropdownButton(
-                    value: _language,
-                    items:
-                        languages.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: _onSetLanguage,
-                  )
+                  const Divider(),
                 ],
               ),
-              const Divider(),
-            ],
-          ),
         )));
   }
 }

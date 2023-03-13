@@ -8,6 +8,7 @@
   "calculate": "计算",
   "set_as": "设置为",
   "percentages": "百分比",
+  "percentage": "百分比",
   "one_rep_max_calculator": "1RM计算器",
   "clear": "清除",
   "squat": "深蹲",
@@ -15,7 +16,7 @@
   "deadlift": "硬拉",
   "body_weight": "体重",
   "gender": "性别",
-  "wilks_score": "wilks系数",
+  "wilks_score": "维京系数",
   "male": "男",
   "female": "女",
   "item": "项目",
@@ -32,5 +33,11 @@
   "reps_not_specified": "需要填写次数",
   "body_weight_not_specified": "需要填写体重",
 
-  "language": "语言"
+  "language": "语言",
+  "english": "英语",
+  "chinese": "中文",
+
+  "theme": "主题",
+  "light": "Light",
+  "dark": "Dark"
 }

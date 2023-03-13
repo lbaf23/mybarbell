@@ -24,6 +24,7 @@
   "reps": "Reps",
   "calculate": "Calculate",
   "set_as": "set as",
+  "percentage": "Percentage",
   "percentages": "Percentages",
 
   "squat": "Squat",
@@ -49,5 +50,11 @@
   "reps_not_specified": "Reps not specified",
   "body_weight_not_specified": "Body weight not specified",
 
-  "language": "Language"
+  "language": "Language",
+  "english": "English",
+  "chinese": "Chinese",
+
+  "theme": "Theme",
+  "light": "Light",
+  "dark": "Dark"
 }
