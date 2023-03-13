@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:mybarbell/provider/current_locale.dart';
+import 'package:mybarbell/provider/currentSettings.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -12,36 +13,37 @@ class SettingsPage extends StatefulWidget {
 
 const labelStyle = TextStyle(fontSize: 16);
 
-const localeList = ["en", "zh"];
-
 class _SettingsPageState extends State<SettingsPage> {
-  var _language = '0';
-  var _theme = '0';
+  _SettingsPageState();
 
-  void _onSetLanguage(value) {
-    if (value != _language) {
-      setState(() {
-        _language = value!;
-      });
-      Provider.of<CurrentLocale>(context, listen: false)
-          .setLocale(Locale(localeList[int.parse(value)]));
-    }
+  @override
+  void initState() {
+    super.initState();
   }
-  void _onSetTheme(value) {
-    if (value != _theme) {
-      setState(() {
-        _theme = value!;
-      });
-      // TODO set theme
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
-    var languages = [
-      ['0', AppLocalizations.of(context)!.english],
-      ['1', AppLocalizations.of(context)!.chinese]
+    var locale = Provider.of<CurrentSettings>(context, listen: false).localeString;
+    var theme = Provider.of<CurrentSettings>(context, listen: false).themeString;
+
+    void onSetLanguage(value) {
+      if (value != locale) {
+          locale = value!;
+          Provider.of<CurrentSettings>(context, listen: false)
+              .setLocale(value);
+      }
+    }
+    void onSetTheme(value) {
+      if (value != theme) {
+          theme = value!;
+          Provider.of<CurrentSettings>(context, listen: false)
+              .setTheme(value);
+      }
+    }
+
+    var locales = [
+      ['en', AppLocalizations.of(context)!.english],
+      ['zh', AppLocalizations.of(context)!.chinese]
     ];
     var themes = [
       ['0', AppLocalizations.of(context)!.light],
@@ -49,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
 
     return Padding(
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         child: Card(
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -73,15 +75,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         width: 20,
                       ),
                       DropdownButton(
-                        value: _language,
-                        items:
-                            languages.map<DropdownMenuItem<String>>((List<String> value) {
+                        value: locale,
+                        items: locales.map<DropdownMenuItem<String>>((List<String> value) {
                           return DropdownMenuItem<String>(
                             value: value[0],
                             child: Text(value[1])
                           );
                         }).toList(),
-                        onChanged: _onSetLanguage,
+                        onChanged: onSetLanguage,
                       )
                     ],
                   ),
@@ -103,15 +104,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         width: 20,
                       ),
                       DropdownButton(
-                        value: _theme,
-                        items:
-                        themes.map<DropdownMenuItem<String>>((List<String> value) {
+                        value: theme,
+                        items: themes.map<DropdownMenuItem<String>>((List<String> value) {
                           return DropdownMenuItem<String>(
                               value: value[0],
                               child: Text(value[1])
                           );
                         }).toList(),
-                        onChanged: _onSetTheme,
+                        onChanged: onSetTheme,
                       )
                     ],
                   ),
