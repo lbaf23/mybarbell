@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mybarbell/provider/currentSettings.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import 'CalculatorPage.dart';
 import 'PlanPage.dart';
@@ -88,8 +91,22 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  ScrollPhysics? getPhysics() {
+    if (UniversalPlatform.isAndroid) {
+      return const ClampingScrollPhysics();
+    } else if (UniversalPlatform.isIOS) {
+      return const NeverScrollableScrollPhysics();
+    }
+    else {
+      return const NeverScrollableScrollPhysics();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    var pageController = PageController(initialPage: _bottomIndex);
+
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -97,7 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _bottomIndex,
-          onTap: _onBottomChanged,
+          onTap: (index) {
+            if (index != _bottomIndex) {
+              pageController.jumpToPage(index);
+            }
+          },
           items: [
             BottomNavigationBarItem(
                 icon: const Icon(Icons.calculate),
@@ -112,7 +133,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 label: AppLocalizations.of(context)!.settings),
           ],
         ),
-        body: _pageList[_bottomIndex],
+        body: PageView.builder(
+            itemBuilder: (BuildContext context, int index) => _pageList[index],
+            controller: pageController,
+            itemCount: _pageList.length,
+            physics: getPhysics(),
+            onPageChanged: (index) {
+                setState(() {
+                _bottomIndex = index;
+              });
+            },
+        ),
         floatingActionButton: _fbutton[_bottomIndex]);
   }
 }

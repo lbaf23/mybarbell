@@ -28,14 +28,18 @@ class _SettingsPageState extends State<SettingsPage> {
 
     void onSetLanguage(value) {
       if (value != locale) {
-          locale = value!;
+          setState(() {
+            locale = value;
+          });
           Provider.of<CurrentSettings>(context, listen: false)
               .setLocale(value);
       }
     }
     void onSetTheme(value) {
       if (value != theme) {
-          theme = value!;
+          setState(() {
+            theme = value;
+          });
           Provider.of<CurrentSettings>(context, listen: false)
               .setTheme(value);
       }
