@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mybarbell/provider/currentSettings.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -62,50 +61,64 @@ class _SettingsPageState extends State<SettingsPage> {
               child: ListView(
                 children: [
                   const Divider(),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.language,
-                        size: 16,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.language,
-                        style: labelStyle,
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      DropdownButton(
-                        value: locale,
-                        items: locales.map<DropdownMenuItem<String>>((List<String> value) {
-                          return DropdownMenuItem<String>(
-                            value: value[0],
-                            child: Text(value[1])
-                          );
-                        }).toList(),
-                        onChanged: onSetLanguage,
-                      )
-                    ],
+                  ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 200,
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.language,
+                                size: 16,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                AppLocalizations.of(context)!.language,
+                                style: labelStyle,
+                              ),
+                            ],
+                          ),
+                        ),
+                        DropdownButton(
+                          value: locale,
+                          items: locales.map<DropdownMenuItem<String>>((List<String> value) {
+                            return DropdownMenuItem<String>(
+                                value: value[0],
+                                child: Text(value[1])
+                            );
+                          }).toList(),
+                          onChanged: onSetLanguage,
+                        )
+                      ],
+                    ),
+                    subtitle: Text(AppLocalizations.of(context)!.languageSubtitle),
                   ),
                   const Divider(),
-                  Row(
+                  ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(
-                        Icons.color_lens,
-                        size: 16,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.theme,
-                        style: labelStyle,
-                      ),
-                      const SizedBox(
-                        width: 20,
+                      SizedBox(
+                        width: 200,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.color_lens,
+                              size: 16,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.theme,
+                              style: labelStyle,
+                            ),
+                          ],
+                        ),
                       ),
                       DropdownButton(
                         value: theme,
@@ -118,6 +131,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         onChanged: onSetTheme,
                       )
                     ],
+                    ),
+                    subtitle: Text(AppLocalizations.of(context)!.themeSubtitle)
                   ),
                   const Divider(),
                 ],

@@ -3,11 +3,14 @@
   "@calculator": {
     "type": "text"
   },
+  "tracker": "Tracker",
   "plan": "Plan",
   "@Plan": {
     "type": "text"
   },
   "settings": "Settings",
+  "languageSubtitle": "choose the language",
+  "themeSubtitle": "choose the theme of the app",
   "@settings": {
     "type": "text"
   },

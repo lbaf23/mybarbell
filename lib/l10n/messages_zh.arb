@@ -1,7 +1,10 @@
 {
   "calculator": "计算",
+  "tracker": "轨迹",
   "plan": "计划",
   "settings": "设置",
+  "languageSubtitle": "选择语言",
+  "themeSubtitle": "选择主题",
   "formula": "计算公式",
   "weight": "重量",
   "reps": "次数",

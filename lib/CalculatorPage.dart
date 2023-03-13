@@ -131,6 +131,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   void _onCalculate1RM(formula) {
+    if (!_checkCalculate1RM()) {
+      return;
+    }
     double weight;
     int reps;
     try {
