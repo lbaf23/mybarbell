@@ -83,15 +83,18 @@ class _SettingsPageState extends State<SettingsPage> {
                             ],
                           ),
                         ),
-                        DropdownButton(
-                          value: locale,
-                          items: locales.map<DropdownMenuItem<String>>((List<String> value) {
-                            return DropdownMenuItem<String>(
-                                value: value[0],
-                                child: Text(value[1])
-                            );
-                          }).toList(),
-                          onChanged: onSetLanguage,
+                        SizedBox(
+                          width: 100,
+                          child: DropdownButton(
+                            value: locale,
+                            items: locales.map<DropdownMenuItem<String>>((List<String> value) {
+                              return DropdownMenuItem<String>(
+                                  value: value[0],
+                                  child: Text(value[1])
+                              );
+                            }).toList(),
+                            onChanged: onSetLanguage,
+                          ),
                         )
                       ],
                     ),
@@ -120,15 +123,18 @@ class _SettingsPageState extends State<SettingsPage> {
                           ],
                         ),
                       ),
-                      DropdownButton(
-                        value: theme,
-                        items: themes.map<DropdownMenuItem<String>>((List<String> value) {
-                          return DropdownMenuItem<String>(
-                              value: value[0],
-                              child: Text(value[1])
-                          );
-                        }).toList(),
-                        onChanged: onSetTheme,
+                      SizedBox(
+                        width: 100,
+                        child: DropdownButton(
+                          value: theme,
+                          items: themes.map<DropdownMenuItem<String>>((List<String> value) {
+                            return DropdownMenuItem<String>(
+                                value: value[0],
+                                child: Text(value[1])
+                            );
+                          }).toList(),
+                          onChanged: onSetTheme,
+                        ),
                       )
                     ],
                     ),
