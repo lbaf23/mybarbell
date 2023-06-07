@@ -14,6 +14,9 @@ const zeroStr = '0.00';
 const noLevel = '    ';
 
 const percentagesData = [
+  '110%',
+  '105%',
+  '100%',
   '95%',
   '90%',
   '85%',
@@ -28,6 +31,9 @@ const percentagesData = [
   '40%'
 ];
 const percentagesReps = [
+  '-',
+  '-',
+  '1',
   '2',
   '3',
   '4~5',
@@ -42,6 +48,9 @@ const percentagesReps = [
   '30+'
 ];
 var percentagesWeight = [
+  zeroStr,
+  zeroStr,
+  zeroStr,
   zeroStr,
   zeroStr,
   zeroStr,
@@ -155,8 +164,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   void calculatePercentages(double rm1) {
-    for (int i = 0; i < 12; i++) {
-      percentagesWeight[i] = ((95 - 5 * i) / 100.0 * rm1).toStringAsFixed(2);
+    for (int i = 0; i < 14; i++) {
+      percentagesWeight[i] = ((110 - 5 * i) / 100.0 * rm1).toStringAsFixed(2);
     }
   }
 
@@ -458,82 +467,82 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.set_as,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        ButtonBar(
-                          children: [
-                            OutlinedButton(
-                                onPressed: () {
-                                  if (_rm1 != zeroStr) {
-                                    if (_weightUnit != _wkWeightUnit) {
-                                      if (_wkWeightUnit == 'Kg') {
-                                        _squatController.text =
-                                            lb2kg(double.parse(_rm1))
-                                                .toStringAsFixed(2);
-                                      } else {
-                                        _squatController.text =
-                                            kg2lb(double.parse(_rm1))
-                                                .toStringAsFixed(2);
-                                      }
-                                    } else {
-                                      _squatController.text = _rm1;
-                                    }
-                                  }
-                                },
-                                child:
-                                    Text(AppLocalizations.of(context)!.squat)),
-                            OutlinedButton(
-                                onPressed: () {
-                                  if (_rm1 != zeroStr) {
-                                    if (_weightUnit != _wkWeightUnit) {
-                                      if (_wkWeightUnit == 'Kg') {
-                                        _benchController.text =
-                                            lb2kg(double.parse(_rm1))
-                                                .toStringAsFixed(2);
-                                      } else {
-                                        _benchController.text =
-                                            kg2lb(double.parse(_rm1))
-                                                .toStringAsFixed(2);
-                                      }
-                                    } else {
-                                      _benchController.text = _rm1;
-                                    }
-                                  }
-                                },
-                                child:
-                                    Text(AppLocalizations.of(context)!.bench)),
-                            OutlinedButton(
-                                onPressed: () {
-                                  if (_rm1 != zeroStr) {
-                                    if (_weightUnit != _wkWeightUnit) {
-                                      if (_wkWeightUnit == 'Kg') {
-                                        _deadliftController.text =
-                                            lb2kg(double.parse(_rm1))
-                                                .toStringAsFixed(2);
-                                      } else {
-                                        _deadliftController.text =
-                                            kg2lb(double.parse(_rm1))
-                                                .toStringAsFixed(2);
-                                      }
-                                    } else {
-                                      _deadliftController.text = _rm1;
-                                    }
-                                  }
-                                },
-                                child: Text(
-                                    AppLocalizations.of(context)!.deadlift))
-                          ],
-                        )
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   children: [
+                    //     Text(
+                    //       AppLocalizations.of(context)!.set_as,
+                    //       style: const TextStyle(fontSize: 16),
+                    //     ),
+                    //     const SizedBox(
+                    //       width: 5,
+                    //     ),
+                    //     ButtonBar(
+                    //       children: [
+                    //         OutlinedButton(
+                    //             onPressed: () {
+                    //               if (_rm1 != zeroStr) {
+                    //                 if (_weightUnit != _wkWeightUnit) {
+                    //                   if (_wkWeightUnit == 'Kg') {
+                    //                     _squatController.text =
+                    //                         lb2kg(double.parse(_rm1))
+                    //                             .toStringAsFixed(2);
+                    //                   } else {
+                    //                     _squatController.text =
+                    //                         kg2lb(double.parse(_rm1))
+                    //                             .toStringAsFixed(2);
+                    //                   }
+                    //                 } else {
+                    //                   _squatController.text = _rm1;
+                    //                 }
+                    //               }
+                    //             },
+                    //             child:
+                    //                 Text(AppLocalizations.of(context)!.squat)),
+                    //         OutlinedButton(
+                    //             onPressed: () {
+                    //               if (_rm1 != zeroStr) {
+                    //                 if (_weightUnit != _wkWeightUnit) {
+                    //                   if (_wkWeightUnit == 'Kg') {
+                    //                     _benchController.text =
+                    //                         lb2kg(double.parse(_rm1))
+                    //                             .toStringAsFixed(2);
+                    //                   } else {
+                    //                     _benchController.text =
+                    //                         kg2lb(double.parse(_rm1))
+                    //                             .toStringAsFixed(2);
+                    //                   }
+                    //                 } else {
+                    //                   _benchController.text = _rm1;
+                    //                 }
+                    //               }
+                    //             },
+                    //             child:
+                    //                 Text(AppLocalizations.of(context)!.bench)),
+                    //         OutlinedButton(
+                    //             onPressed: () {
+                    //               if (_rm1 != zeroStr) {
+                    //                 if (_weightUnit != _wkWeightUnit) {
+                    //                   if (_wkWeightUnit == 'Kg') {
+                    //                     _deadliftController.text =
+                    //                         lb2kg(double.parse(_rm1))
+                    //                             .toStringAsFixed(2);
+                    //                   } else {
+                    //                     _deadliftController.text =
+                    //                         kg2lb(double.parse(_rm1))
+                    //                             .toStringAsFixed(2);
+                    //                   }
+                    //                 } else {
+                    //                   _deadliftController.text = _rm1;
+                    //                 }
+                    //               }
+                    //             },
+                    //             child: Text(
+                    //                 AppLocalizations.of(context)!.deadlift))
+                    //       ],
+                    //     )
+                    //   ],
+                    // ),
                     const Divider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
