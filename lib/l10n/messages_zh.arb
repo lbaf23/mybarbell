@@ -32,6 +32,7 @@
   "advanced": "高级",
   "elite": "精英",
 
+  "one_rep_copied": "1RM 已复制",
   "weight_not_specified": "需要填写重量",
   "reps_not_specified": "需要填写次数",
   "body_weight_not_specified": "需要填写体重",

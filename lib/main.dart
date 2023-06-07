@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:mybarbell/TrackerPage.dart';
-import 'package:mybarbell/provider/currentSettings.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
+import 'TrackerPage.dart';
+import 'provider/currentSettings.dart';
 import 'CalculatorPage.dart';
 import 'PlanPage.dart';
 import 'SettingsPage.dart';
