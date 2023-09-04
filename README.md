@@ -7,25 +7,29 @@
 
 ## Getting Started
 
+- flutter
+
+## Development
+
+- generate l10n
+
 ```bash
 flutter gen-l10n
 ```
 
-build
+## Build
+
+- build for android
 
 ```bash
 flutter build apk --release
 ```
 
-## light
+- build for windows
 
-| ![](./images/light/1.jpg) | ![](./images/light/2.jpg) |
-|---------------------------|---------------------------|
-
-## dark
-| ![](./images/dark/1.jpg) | ![](./images/dark/2.jpg) |
-|--------------------------|--------------------------|
-
+```bash
+flutter build windows --release
+```
 
 ## TODO
 
@@ -38,3 +42,14 @@ flutter build apk --release
 - [x] multi language
 - [ ] calculate history
 - [ ] plan page
+
+
+## light
+
+| ![](./images/light/1.jpg) | ![](./images/light/2.jpg) |
+|---------------------------|---------------------------|
+
+## dark
+| ![](./images/dark/1.jpg) | ![](./images/dark/2.jpg) |
+|--------------------------|--------------------------|
+
