@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'Style.dart';
-import 'CalculateUtils.dart';
 
+import 'CalculateUtils.dart';
+import 'Style.dart';
 
 class OneRepMaxCalculatorPage extends StatefulWidget {
   const OneRepMaxCalculatorPage({super.key});
 
   @override
-  State<OneRepMaxCalculatorPage> createState() => _OneRepMaxCalculatorPageState();
+  State<OneRepMaxCalculatorPage> createState() =>
+      _OneRepMaxCalculatorPageState();
 }
 
 const zeroStr = '0.00';
@@ -151,21 +152,18 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
     return list;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Card(child: Padding(
+    return Card(
+        child: Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppLocalizations.of(context)!.one_rep_max_calculator,
-                style: titleStyle
-              ),
+              Text(AppLocalizations.of(context)!.one_rep_max_calculator,
+                  style: titleStyle),
               TextButton(
                   onPressed: _clearData,
                   child: Text(
@@ -178,22 +176,19 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
           ),
           Row(
             children: [
-              Text(
-                AppLocalizations.of(context)!.formula,
-                style: inputStyle
-              ),
+              Text(AppLocalizations.of(context)!.formula, style: inputStyle),
               const SizedBox(
                 width: 10,
               ),
               DropdownButton(
                   value: _formula,
-                  items: Formula.map<DropdownMenuItem<String>>(
-                          (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value, style: inputStyle),
-                        );
-                      }).toList(),
+                  padding: dropdownPadding,
+                  items: Formula.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: inputStyle),
+                    );
+                  }).toList(),
                   onChanged: (value) {
                     if (value != _formula) {
                       _onCalculate1RM(value!);
@@ -213,33 +208,30 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
               Expanded(
                 flex: 2,
                 child: TextField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'\d+\.?\d*'))
-                  ],
-                  maxLength: inputTextMaxLength,
-                  controller: _weightController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                      decimal: false),
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: AppLocalizations.of(context)!.weight,
-                      counterText: ''),
-                  style: inputStyle
-                ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'\d+\.?\d*'))
+                    ],
+                    maxLength: inputTextMaxLength,
+                    controller: _weightController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: false),
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: AppLocalizations.of(context)!.weight,
+                        counterText: ''),
+                    style: inputStyle),
               ),
-              const SizedBox(
-                width: 20,
-              ),
+              largeWidthBox,
               DropdownButton<String>(
                 value: _weightUnit,
+                padding: dropdownPadding,
                 onChanged: (value) {
                   if (_weightUnit != value) {
                     if (value == 'Kg') {
                       if (_weightController.text != '') {
-                        _weightController.text = lb2kg(
-                            double.parse(_weightController.text))
-                            .toStringAsFixed(2);
+                        _weightController.text =
+                            lb2kg(double.parse(_weightController.text))
+                                .toStringAsFixed(2);
                       }
                       if (_rm1 != zeroStr) {
                         double rm1 = lb2kg(double.parse(_rm1));
@@ -250,9 +242,9 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
                       }
                     } else {
                       if (_weightController.text != '') {
-                        _weightController.text = kg2lb(
-                            double.parse(_weightController.text))
-                            .toStringAsFixed(2);
+                        _weightController.text =
+                            kg2lb(double.parse(_weightController.text))
+                                .toStringAsFixed(2);
                       }
                       if (_rm1 != zeroStr) {
                         double rm1 = kg2lb(double.parse(_rm1));
@@ -268,19 +260,19 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
                   });
                 },
                 items: const [
-                  DropdownMenuItem(value: 'Kg', child: Text('Kg', style: inputStyle)),
-                  DropdownMenuItem(value: 'Lb', child: Text('Lb', style: inputStyle))
+                  DropdownMenuItem(
+                      value: 'Kg', child: Text('Kg', style: inputStyle)),
+                  DropdownMenuItem(
+                      value: 'Lb', child: Text('Lb', style: inputStyle))
                 ],
               ),
-              const SizedBox(
-                width: 20,
-              ),
+              largeWidthBox,
               Expanded(
                 flex: 1,
                 child: TextField(
                   maxLength: inputTextMaxLength,
-                  keyboardType: const TextInputType.numberWithOptions(
-                      decimal: false),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: false),
                   controller: _repsController,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'\d'))
@@ -294,9 +286,7 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
               ),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          largeHeightBox,
           Row(
             children: [
               Expanded(
@@ -306,18 +296,11 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
                           onPressed: () {
                             _onCalculate1RM(_formula);
                           },
-                          child: Text(
-                            AppLocalizations.of(context)!.calculate,
-                            style: buttonStyle
-                          )
-                      )
-                  )
-              )
+                          child: Text(AppLocalizations.of(context)!.calculate,
+                              style: buttonStyle))))
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          largeHeightBox,
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -330,16 +313,14 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(
-                    width: 20,
-                  ),
+                  largeWidthBox,
                   GestureDetector(
                     onTap: () {
                       if (_rm1 != zeroStr) {
                         Clipboard.setData(ClipboardData(text: _rm1));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context)!.one_rep_copied))
-                        );
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                AppLocalizations.of(context)!.one_rep_copied)));
                       }
                     },
                     child: Text(
@@ -347,13 +328,10 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
                       style: TextStyle(
                           fontSize: 45,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary
-                      ),
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  mediumWidthBox,
                   Text(
                     _weightUnit,
                     style: const TextStyle(
@@ -365,9 +343,7 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
               )
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          mediumHeightBox,
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -377,14 +353,10 @@ class _OneRepMaxCalculatorPageState extends State<OneRepMaxCalculatorPage> {
                   showBottomBorder: true,
                   columns: [
                     DataColumn(
-                        label: Text(AppLocalizations.of(context)!.weight)
-                    ),
+                        label: Text(AppLocalizations.of(context)!.weight)),
                     DataColumn(
-                        label: Text(AppLocalizations.of(context)!.percentage)
-                    ),
-                    DataColumn(
-                        label: Text(AppLocalizations.of(context)!.reps)
-                    )
+                        label: Text(AppLocalizations.of(context)!.percentage)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.reps))
                   ],
                   rows: _getPercentagesReps(),
                 ),

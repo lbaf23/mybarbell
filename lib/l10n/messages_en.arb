@@ -20,6 +20,7 @@
   "weight": "Weight",
   "@weight": {
   },
+  "weight_unit": "Weight Unit",
 
   "one_rep_max_calculator": "One Rep max calculator",
   "clear": "Clear",
@@ -30,12 +31,28 @@
   "percentage": "Percentage",
   "percentages": "Percentages",
 
-  "squat": "Squat",
-  "bench": "Bench",
-  "deadlift": "Deadlift",
+  "total_weight": "Total Weight",
+
   "body_weight": "Body Weight",
   "gender": "Gender",
-  "wilks_score": "Wilks Score",
+  "score": "score",
+
+  "wilks_score_2_0": "Wilks Score 2.0",
+  "wilks_score_1_0": "Wilks Score 1.0",
+  "dots_score": "Dots Score",
+
+  "wilks_dots_score": "Wilks/Dots Score",
+  "ipfs_score": "IPF/IPF GL score",
+  "ipf_score": "IPF score",
+  "ipf_gl_score": "IPF GL score",
+
+  "event": "Event",
+  "category": "Category",
+  "equipped": "Equipped",
+  "raw": "Classic/Raw",
+  "bench_only": "Bench Only",
+  "full_meet": "Full Meet",
+
   "male": "Male",
   "female": "Female",
   "item": "Item",

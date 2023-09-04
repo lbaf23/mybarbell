@@ -5,42 +5,36 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'CalculateUtils.dart';
 import 'Style.dart';
 
-class WilksScoreCalculatorPage extends StatefulWidget {
-  const WilksScoreCalculatorPage({super.key});
+class IPFScoreCalculatorPage extends StatefulWidget {
+  const IPFScoreCalculatorPage({super.key});
 
-  void clearData() => _WilksScoreCalculatorPageState()._clearData();
+  void clearData() => _IPFScoreCalculatorPageState()._clearData();
 
   @override
-  State<WilksScoreCalculatorPage> createState() =>
-      _WilksScoreCalculatorPageState();
+  State<IPFScoreCalculatorPage> createState() => _IPFScoreCalculatorPageState();
 }
 
 const zeroStr = '0.00';
-const noLevel = '';
 
-class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
+class _IPFScoreCalculatorPageState extends State<IPFScoreCalculatorPage> {
   final _bodyWeightController = TextEditingController();
   var _wkWeightUnit = 'Kg';
   var _gender = '0';
 
+  var _event = 0;
+  var _category = 0;
+
   final _totalController = TextEditingController();
 
-  var _wilksScore20 = zeroStr;
-  var _wilksScore10 = zeroStr;
-  var _dotsScore = zeroStr;
-
-  var _wilksLevel = noLevel;
-  var _levelColor = Colors.grey;
+  var _ipfScore = zeroStr;
+  var _ipfGLScore = zeroStr;
 
   void _clearData() {
     _bodyWeightController.text = '';
     _totalController.text = '';
     setState(() {
-      _wilksScore10 = zeroStr;
-      _wilksScore20 = zeroStr;
-      _dotsScore = zeroStr;
-      _wilksLevel = noLevel;
-      _levelColor = Colors.grey;
+      _ipfScore = zeroStr;
+      _ipfGLScore = zeroStr;
     });
   }
 
@@ -80,43 +74,25 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
       bodyWeight = lb2kg(bodyWeight);
       total = lb2kg(total);
     }
-
-    _onCalculateWilKs1(bodyWeight, total, g);
-    _onCalculateWilKs2(bodyWeight, total, g);
-    _onCalculateDots(bodyWeight, total, g);
+    int liftType = _category + _event;
+    _onCalculateGL(bodyWeight, total, g, liftType);
+    _onCalculateIPF(bodyWeight, total, g, liftType);
   }
 
-  void _onCalculateDots(double bodyWeight, double total, int gender) {
-    var score = calculateDotsScore(bodyWeight, gender, total);
+  void _onCalculateIPF(
+      double bodyWeight, double total, int gender, int liftType) {
+    var score = calculateIPFScore(bodyWeight, gender, liftType, total);
     setState(() {
-      _dotsScore = score.toStringAsFixed(2);
+      _ipfScore = score.toStringAsFixed(2);
     });
   }
 
-  void _onCalculateWilKs2(double bodyWeight, double total, int gender) {
-    var score = calculateWilksScore(bodyWeight, gender, total, 2);
+  void _onCalculateGL(
+      double bodyWeight, double total, int gender, int liftType) {
+    var score = calculateGLScore(bodyWeight, gender, liftType, total);
     setState(() {
-      _wilksScore20 = score.toStringAsFixed(2);
+      _ipfGLScore = score.toStringAsFixed(2);
     });
-  }
-
-  void _onCalculateWilKs1(double bodyWeight, double total, int gender) {
-    var score = calculateWilksScore(bodyWeight, gender, total, 1);
-    setState(() {
-      _wilksScore10 = score.toStringAsFixed(2);
-      _wilksLevel = calculateWilksLevel(score, context)[0];
-      _levelColor = calculateWilksLevel(score, context)[1];
-    });
-  }
-
-  Widget getChip() {
-    if (_wilksLevel != noLevel) {
-      return Chip(
-        label: Text(_wilksLevel),
-        backgroundColor: _levelColor,
-      );
-    }
-    return const SizedBox();
   }
 
   @override
@@ -140,7 +116,9 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
                   counterText: ''),
               style: inputStyle,
             )),
-            mediumWidthBox,
+            const SizedBox(
+              width: 10,
+            ),
             Expanded(
                 child: TextField(
               maxLength: inputTextMaxLength,
@@ -158,11 +136,15 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
             )),
           ],
         ),
-        largeHeightBox,
+        const SizedBox(
+          height: 20,
+        ),
         Row(
           children: [
             Text(AppLocalizations.of(context)!.gender, style: inputStyle),
-            mediumWidthBox,
+            const SizedBox(
+              width: 10,
+            ),
             DropdownButton(
                 value: _gender,
                 padding: dropdownPadding,
@@ -192,7 +174,9 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
               width: 40,
             ),
             Text(AppLocalizations.of(context)!.weight_unit, style: inputStyle),
-            largeWidthBox,
+            const SizedBox(
+              width: 20,
+            ),
             DropdownButton(
                 value: _wkWeightUnit,
                 padding: dropdownPadding,
@@ -243,13 +227,100 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
           ],
         ),
         largeHeightBox,
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.event,
+              style: inputStyle,
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: RadioListTile(
+                  title: Text(AppLocalizations.of(context)!.equipped),
+                  value: 0,
+                  groupValue: _event,
+                  onChanged: (value) {
+                    if (_event != value) {
+                      setState(() {
+                        _event = value!;
+                      });
+                      _onCalculateScore(_gender);
+                    }
+                  }),
+            ),
+            Expanded(
+              child: RadioListTile(
+                  title: Text(AppLocalizations.of(context)!.raw),
+                  value: 1,
+                  groupValue: _event,
+                  onChanged: (value) {
+                    if (_event != value) {
+                      setState(() {
+                        _event = value!;
+                      });
+                      _onCalculateScore(_gender);
+                    }
+                  }),
+            )
+          ],
+        ),
+        divider,
+        smallHeightBox,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.category,
+              style: inputStyle,
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: RadioListTile(
+                  title: Text(AppLocalizations.of(context)!.full_meet),
+                  value: 0,
+                  groupValue: _category,
+                  onChanged: (value) {
+                    if (_category != value) {
+                      setState(() {
+                        _category = value!;
+                      });
+                      _onCalculateScore(_gender);
+                    }
+                  }),
+            ),
+            Expanded(
+              child: RadioListTile(
+                  title: Text(AppLocalizations.of(context)!.bench_only),
+                  value: 2,
+                  groupValue: _category,
+                  onChanged: (value) {
+                    if (_category != value) {
+                      setState(() {
+                        _category = value!;
+                      });
+                      _onCalculateScore(_gender);
+                    }
+                  }),
+            )
+          ],
+        ),
+        divider,
+        largeHeightBox,
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Expanded(
                 child: SizedBox(
-              height: 40,
-              child: ElevatedButton(
+                  height: 40,
+                  child: ElevatedButton(
                   onPressed: () {
                     if (_checkCalculateWilks()) {
                       _onCalculateScore(_gender);
@@ -260,7 +331,7 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
             ))
           ],
         ),
-        mediumWidthBox,
+        largeHeightBox,
         Row(
           children: [
             Expanded(
@@ -276,33 +347,14 @@ class _WilksScoreCalculatorPageState extends State<WilksScoreCalculatorPage> {
                   rows: [
                     DataRow(cells: [
                       DataCell(
-                          Text(AppLocalizations.of(context)!.wilks_score_2_0)),
-                      DataCell(Text(_wilksScore20)),
+                          Text(AppLocalizations.of(context)!.ipf_gl_score)),
+                      DataCell(Text(_ipfGLScore)),
                     ]),
                     DataRow(cells: [
-                      DataCell(
-                          Text(AppLocalizations.of(context)!.wilks_score_1_0)),
-                      DataCell(Text(_wilksScore10)),
-                    ]),
-                    DataRow(cells: [
-                      DataCell(Text(AppLocalizations.of(context)!.dots_score)),
-                      DataCell(Text(_dotsScore)),
+                      DataCell(Text(AppLocalizations.of(context)!.ipf_score)),
+                      DataCell(Text(_ipfScore)),
                     ]),
                   ]),
-            )
-          ],
-        ),
-        mediumHeightBox,
-        Row(
-          children: [
-            Text(
-              AppLocalizations.of(context)!.training_level,
-              style: const TextStyle(fontSize: 16),
-            ),
-            largeWidthBox,
-            SizedBox(
-              height: 40,
-              child: getChip(),
             )
           ],
         ),

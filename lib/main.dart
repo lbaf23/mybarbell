@@ -66,12 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
   int _bottomIndex = 0;
   final _pageList = [
     const CalculatorPage(),
-    const TrackerPage(),
+    // const PlanPage(),
     const SettingsPage()
   ];
   final _fbutton = [
     null,
-    null,
+    // null,
 /*
     FloatingActionButton(
         onPressed: () {}, tooltip: 'Increment', child: const Icon(Icons.add)
@@ -111,10 +111,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: const Icon(Icons.calculate),
                 label: AppLocalizations.of(context)!.calculator
             ),
-            BottomNavigationBarItem(
-                icon: const Icon(Icons.play_circle),
-                label: AppLocalizations.of(context)!.tracker
-            ),
+            // BottomNavigationBarItem(
+            //     icon: const Icon(Icons.book),
+            //     label: AppLocalizations.of(context)!.plan
+            // ),
             BottomNavigationBarItem(
                 icon: const Icon(Icons.settings),
                 label: AppLocalizations.of(context)!.settings
